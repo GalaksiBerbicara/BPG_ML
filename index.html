@@ -7,172 +7,413 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&display=swap">
 <style>
-:root{
-  --ink:#0d1230; --panel:#161d47; --line:#2b3571; --gold:#e8b65b; --cyan:#58d6ee;
-  --text:#eef0fa; --mute:#9aa3d0; color-scheme:dark;
-}
+:root{--ink:#0d1230;--panel:#161d47;--panel2:#1d2657;--line:#2e3a78;--gold:#e8b65b;--cyan:#58d6ee;--text:#eef0fa;--mute:#9aa3d0;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(900px 500px at 50% -10%,#212b6b,var(--ink));color:var(--text);
-  font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-main{max-width:860px;margin:0 auto;padding:32px 18px 64px}
-h1{font:700 clamp(30px,6vw,52px)/1.05 "Chakra Petch",system-ui,sans-serif;margin:0 0 6px;letter-spacing:.5px}
-.sub{color:var(--mute);margin:0 0 28px;max-width:56ch}
-.setup{display:grid;gap:18px;grid-template-columns:1fr 1fr}
-@media(max-width:680px){.setup{grid-template-columns:1fr}}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-label,.lbl{display:block;font-weight:600;margin-bottom:8px}
-textarea{width:100%;min-height:190px;resize:vertical;background:#0f1538;color:var(--text);
-  border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
-textarea:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.hint{color:var(--mute);font-size:14px;margin:8px 0 0}
-.opt{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px;cursor:pointer}
-.opt:has(input:checked){border-color:var(--gold);background:#1e2757}
+body{margin:0;background:radial-gradient(900px 500px at 50% -10%,#212b6b,var(--ink)) fixed;color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+main{max-width:900px;margin:0 auto;padding:28px 16px 80px}
+h1,h2,.disp{font-family:"Chakra Petch",system-ui,sans-serif}
+h1{font-size:clamp(30px,6vw,50px);line-height:1.05;margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 24px;max-width:58ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.card h2{font-size:18px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card h2 small{font:500 14px system-ui,sans-serif;color:var(--mute)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;background:#0f1538;border:1px solid var(--line);border-radius:10px;padding:10px;cursor:text}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 12px;animation:in .2s ease-out}
+.chip button{border:0;background:#2a3572;border-radius:50%;width:22px;height:22px;line-height:20px;padding:0;color:var(--mute)}
+.chip button:hover{background:#ff6b81;color:#fff}
+.chips input{flex:1;min-width:140px;background:none;border:0;color:var(--text);font:inherit;padding:4px}
+.chips input:focus-visible{outline:none}
+.chips:focus-within{border-color:var(--cyan)}
+.row-tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;color:var(--mute)}
+.ghost:hover{border-color:var(--gold);color:var(--text)}
+.msg{color:#ffb4c0;font-size:14px;min-height:1.4em;margin:8px 0 0}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:700px){.modes{grid-template-columns:1fr}}
+.mode{display:block;position:relative;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;background:#131a42;transition:border-color .15s,background .15s}
+.mode input{position:absolute;opacity:0}
+.mode b{display:block;font:700 18px "Chakra Petch",sans-serif;margin-bottom:4px}
+.mode span{color:var(--mute);font-size:14px}
+.mode:has(input:checked){border-color:var(--gold);background:#222c63;box-shadow:inset 0 0 0 1px var(--gold)}
+.mode:has(input:focus-visible){outline:2px solid var(--cyan);outline-offset:2px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-top:1px solid var(--line);cursor:pointer}
+.opt:first-of-type{border-top:0}
+.opt input{margin-top:5px;width:18px;height:18px;accent-color:var(--gold);flex:none}
 .opt b{display:block}.opt span{color:var(--mute);font-size:14px}
-.opt input{margin-top:5px;accent-color:var(--gold)}
-.go{margin-top:6px;width:100%;padding:14px;border:0;border-radius:8px;cursor:pointer;
-  font:700 20px "Chakra Petch",system-ui,sans-serif;color:#2a1d00;background:linear-gradient(180deg,#f4cd7e,var(--gold))}
+.opt:has(input:disabled){opacity:.5;cursor:not-allowed}
+.opt[hidden]{display:none}
+.go{width:100%;padding:16px;border:0;border-radius:12px;font:700 22px "Chakra Petch",sans-serif;color:#2a1d00;background:linear-gradient(180deg,#f6d287,var(--gold));box-shadow:0 6px 24px rgba(232,182,91,.25)}
 .go:active{transform:translateY(1px)}
-.err{color:#ff9aa8;min-height:1.4em;margin:10px 0 0;font-size:14px}
-#out{margin-top:30px}
-.team{margin-bottom:22px}
-.team h2{font:700 22px "Chakra Petch",system-ui,sans-serif;margin:0 0 10px;color:var(--cyan)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);
-  border:1px solid var(--line);border-left:4px solid var(--c,var(--gold));border-radius:8px;
-  padding:12px 16px;margin-bottom:8px;animation:pop .35s ease-out both}
-.row .n{font-weight:600;word-break:break-word}
-.row .r{font:700 18px "Chakra Petch",system-ui,sans-serif;color:var(--c,var(--gold));text-align:right}
-@keyframes pop{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){.row{animation:none}}
-.actions{display:flex;gap:10px;margin-top:6px}
-.actions button{padding:10px 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font:inherit}
+.go:disabled{opacity:.5;cursor:wait}
+#out{margin-top:26px}
+.team{margin-bottom:18px}
+.team h2{font-size:22px;color:var(--cyan);margin:0 0 10px}
+.res{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.res .who{flex:1;min-width:0}
+.res .n{font-weight:600;word-break:break-word}
+.res .r{font:700 20px "Chakra Petch",sans-serif;color:var(--c)}
+.res .h{font-size:14px;color:var(--mute)}
+.res.spin .r{opacity:.65}
+.res.done .r{animation:land .35s ease-out}
+.res button{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:6px 10px;font-size:14px;color:var(--mute)}
+.res button:hover{border-color:var(--gold);color:var(--text)}
+@keyframes land{0%{transform:scale(1.25)}100%{transform:none}}
+@keyframes in{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions button{padding:10px 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
 .actions button:hover{border-color:var(--gold)}
+details{margin-top:22px;color:var(--mute)}
+summary{cursor:pointer}
+pre{white-space:pre-wrap;background:#0f1538;border:1px solid var(--line);border-radius:8px;padding:10px;font:14px/1.5 ui-monospace,monospace;color:var(--text)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <main>
   <h1>Gacha Role Mobile Legends</h1>
-  <p class="sub">Tulis nama pemain, pilih mode, lalu acak. Hasil dikocok dengan sistem kartu, jadi tidak ada role yang dobel selama masih ada sisa.</p>
+  <p class="sub">Masukkan pemain, pilih mode, lalu acak. Role dibagi seperti mengocok kartu, jadi tidak ada yang dobel selama masih ada sisa.</p>
 
-  <div class="setup">
-    <div class="box">
-      <label for="names">Daftar pemain (satu nama per baris)</label>
-      <textarea id="names" spellcheck="false">Tannu
-adlu
-Alex
-mas leopart
-salain (jawir)
-Samuel NRYT
-tole (ahmad)</textarea>
-      <p class="hint" id="count"></p>
+  <section class="card">
+    <h2>1. Pemain <small id="count"></small></h2>
+    <div class="chips" id="chips"><input id="in" placeholder="Ketik nama lalu Enter" aria-label="Tambah pemain" autocomplete="off"></div>
+    <p class="msg" id="msg" role="alert"></p>
+    <div class="row-tools">
+      <button class="ghost" id="clear" type="button">Kosongkan</button>
+      <button class="ghost" id="example" type="button">Isi contoh 7 nama</button>
+      <span style="color:var(--mute);font-size:14px">Tempel banyak nama sekaligus juga bisa (pisah baris atau koma).</span>
     </div>
+  </section>
 
-    <div class="box">
-      <span class="lbl">Mode</span>
-      <label class="opt"><input type="radio" name="mode" value="hero" checked>
-        <div><b>Role hero</b><span>Tank, Fighter, Assassin, Mage, Marksman, Support. Semua orang dapat satu role.</span></div></label>
-      <label class="opt"><input type="radio" name="mode" value="lane">
-        <div><b>Lane + bagi tim</b><span>Pemain dibagi ke tim berisi maksimal 5 orang, tiap orang dapat lane unik di timnya.</span></div></label>
-      <button class="go" id="go" type="button">Acak sekarang</button>
-      <p class="err" id="err" role="alert"></p>
+  <section class="card">
+    <h2>2. Mode</h2>
+    <div class="modes">
+      <label class="mode"><input type="radio" name="mode" value="hero" checked><b>Role</b><span>Tank, Fighter, Assassin, Mage, Marksman, Support. Satu role per orang.</span></label>
+      <label class="mode"><input type="radio" name="mode" value="pick"><b>Role + hero</b><span>Role dikocok, lalu hero acak dari role itu. Hero tidak kembar dalam satu hasil.</span></label>
+      <label class="mode"><input type="radio" name="mode" value="lane"><b>Lane + tim</b><span>Dibagi ke tim maksimal 5 orang. Tiap orang dapat lane unik di timnya.</span></label>
     </div>
-  </div>
+  </section>
 
+  <section class="card">
+    <h2>3. Opsi</h2>
+    <label class="opt"><input type="checkbox" id="split"><div><b>Bagi ke tim (maks 5 orang)</b><span>Wajib aktif di mode Lane. Di mode lain, pemain dibagi rata ke beberapa tim.</span></div></label>
+    <label class="opt"><input type="checkbox" id="balance" checked><div><b>Seimbangkan komposisi tim</b><span>Tim kecil tetap kebagian posisi inti: Tank, Marksman, Mage (mode lane: Jungle, Gold, Mid). Butuh opsi bagi tim aktif.</span></div></label>
+    <label class="opt" id="rowLH" hidden><input type="checkbox" id="laneHero"><div><b>Beri hero sesuai lane</b><span>Setiap pemain juga dapat hero yang cocok dengan lane-nya.</span></div></label>
+    <label class="opt" id="rowPri" hidden><input type="checkbox" id="primary"><div><b>Hanya role/lane utama</b><span>Hero dengan banyak role (mis. Alice: Mage/Tank) hanya dihitung di role pertamanya. Mati = semua role yang tercantum dihitung.</span></div></label>
+  </section>
+
+  <button class="go" id="go" type="button">Acak sekarang</button>
   <section id="out" aria-live="polite"></section>
+
+  <details id="hist"><summary>Riwayat (5 terakhir)</summary><div id="histBody"></div></details>
 </main>
 
 <script>
-const HEROES = [
-  {n:"Tank",c:"#58d6ee"},{n:"Fighter",c:"#f08a4b"},{n:"Assassin",c:"#ff6b81"},
-  {n:"Mage",c:"#b794ff"},{n:"Marksman",c:"#e8b65b"},{n:"Support",c:"#6fe3a0"}
-];
-const LANES = [
-  {n:"EXP Lane",c:"#f08a4b"},{n:"Jungle",c:"#6fe3a0"},{n:"Mid Lane",c:"#b794ff"},
-  {n:"Gold Lane",c:"#e8b65b"},{n:"Roam",c:"#58d6ee"}
-];
+const ROLES=[{n:"Tank",c:"#58d6ee"},{n:"Fighter",c:"#f08a4b"},{n:"Assassin",c:"#ff6b81"},{n:"Mage",c:"#b794ff"},{n:"Marksman",c:"#e8b65b"},{n:"Support",c:"#6fe3a0"}];
+const LANES=[{n:"EXP Lane",c:"#f08a4b"},{n:"Jungle",c:"#6fe3a0"},{n:"Mid Lane",c:"#b794ff"},{n:"Gold Lane",c:"#e8b65b"},{n:"Roam",c:"#58d6ee"}];
+const ALL={};[...ROLES,...LANES].forEach(x=>ALL[x.n]=x);
+// Posisi inti untuk opsi "Seimbangkan komposisi". Urutannya prioritas: tim kecil mengambil dari kiri ke kanan.
+const CORE_ROLE=["Tank","Marksman","Mage"], FLEX_ROLE=["Fighter","Assassin"], LAST_ROLE=["Support"];
+const CORE_LANE=["Jungle","Gold Lane","Mid Lane"], FLEX_LANE=["EXP Lane","Roam"];
 
-// Fisher-Yates dengan crypto supaya tidak bias
-function rand(max){
-  const lim = Math.floor(0x100000000 / max) * max, b = new Uint32Array(1);
-  do { crypto.getRandomValues(b); } while (b[0] >= lim);
-  return b[0] % max;
-}
-function shuffle(a){
-  a = a.slice();
-  for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-function getNames(){
-  return document.getElementById("names").value.split("\n").map(s => s.trim()).filter(Boolean);
-}
-function updateCount(){
-  document.getElementById("count").textContent = getNames().length + " pemain";
-}
-document.getElementById("names").addEventListener("input", updateCount);
-updateCount();
+// Format: Nama|Role (pisah /)|Lane (pisah /). Untuk menambah hero baru, tambah satu baris.
+const RAW=`Miya|Marksman|Gold Lane
+Balmond|Fighter|EXP Lane/Jungle
+Saber|Assassin|Jungle/EXP Lane
+Alice|Mage/Tank|Mid Lane/EXP Lane
+Nana|Mage|Mid Lane
+Tigreal|Tank|Roam
+Alucard|Fighter/Assassin|Jungle/EXP Lane
+Karina|Assassin|Jungle
+Akai|Tank|Roam/Jungle
+Franco|Tank|Roam
+Bane|Fighter/Mage|EXP Lane/Jungle
+Bruno|Marksman|Gold Lane
+Clint|Marksman|Gold Lane
+Rafaela|Support|Roam
+Eudora|Mage|Mid Lane
+Zilong|Fighter/Assassin|EXP Lane
+Fanny|Assassin|Jungle
+Layla|Marksman|Gold Lane
+Minotaur|Tank/Support|Roam
+Lolita|Support/Tank|Roam
+Hayabusa|Assassin|Jungle
+Freya|Fighter|EXP Lane/Jungle
+Gord|Mage|Mid Lane
+Natalia|Assassin|Roam/Jungle
+Kagura|Mage|Mid Lane
+Chou|Fighter|EXP Lane/Roam
+Sun|Fighter|EXP Lane/Jungle
+Alpha|Fighter|Jungle/EXP Lane
+Ruby|Fighter/Tank|EXP Lane/Roam
+Yi Sun-shin|Assassin/Marksman|Jungle
+Moskov|Marksman|Gold Lane
+Johnson|Tank|Roam
+Cyclops|Mage|Mid Lane/Jungle
+Estes|Support|Roam
+Hilda|Fighter/Tank|Roam/EXP Lane
+Aurora|Mage|Mid Lane
+Lapu-Lapu|Fighter|EXP Lane
+Vexana|Mage|Mid Lane
+Harley|Mage/Assassin|Jungle/Mid Lane
+Irithel|Marksman|Gold Lane
+Grock|Tank/Fighter|EXP Lane/Roam
+Argus|Fighter|EXP Lane
+Odette|Mage|Mid Lane
+Lancelot|Assassin|Jungle
+Diggie|Support|Roam
+Hylos|Tank|Roam/Jungle
+Zhask|Mage|Mid Lane
+Helcurt|Assassin|Jungle
+Pharsa|Mage|Mid Lane
+Lesley|Marksman|Gold Lane
+Jawhead|Fighter|EXP Lane/Roam
+Angela|Support|Roam
+Gusion|Assassin/Mage|Jungle/Mid Lane
+Valir|Mage|Mid Lane/Roam
+Martis|Fighter|Jungle/EXP Lane
+Uranus|Tank|EXP Lane
+Hanabi|Marksman|Gold Lane
+Chang'e|Mage|Mid Lane
+Kaja|Fighter/Support|Roam/EXP Lane
+Selena|Assassin/Mage|Roam/Mid Lane
+Aldous|Fighter|EXP Lane
+Claude|Marksman|Gold Lane
+Vale|Mage|Mid Lane
+Leomord|Fighter|Jungle/EXP Lane
+Lunox|Mage|Mid Lane/Jungle
+Hanzo|Assassin|Jungle
+Belerick|Tank|Roam
+Kimmy|Marksman/Mage|Gold Lane/Mid Lane
+Thamuz|Fighter|EXP Lane
+Harith|Mage|Gold Lane/Mid Lane
+Minsitthar|Fighter|EXP Lane/Roam
+Kadita|Mage/Assassin|Mid Lane/Roam
+Faramis|Support/Mage|Mid Lane/Roam
+Badang|Fighter|EXP Lane
+Khufra|Tank|Roam
+Granger|Marksman|Jungle
+Guinevere|Fighter|EXP Lane/Jungle
+Esmeralda|Mage/Tank|EXP Lane
+Terizla|Fighter|EXP Lane
+X.Borg|Fighter|EXP Lane
+Ling|Assassin|Jungle
+Dyrroth|Fighter|EXP Lane/Jungle
+Lylia|Mage|Mid Lane
+Baxia|Tank|Jungle/Roam
+Masha|Fighter/Tank|EXP Lane/Roam
+Wanwan|Marksman|Gold Lane
+Silvanna|Fighter|EXP Lane/Roam
+Cecilion|Mage|Mid Lane
+Atlas|Tank|Roam
+Popol and Kupa|Marksman|Gold Lane/Roam
+Yu Zhong|Fighter|EXP Lane
+Luo Yi|Mage|Mid Lane
+Benedetta|Assassin|EXP Lane/Jungle
+Khaleed|Fighter|EXP Lane
+Barats|Tank/Fighter|Jungle/EXP Lane
+Brody|Marksman|Gold Lane
+Yve|Mage|Mid Lane
+Mathilda|Support/Assassin|Roam
+Paquito|Fighter/Assassin|EXP Lane/Jungle
+Gloo|Tank|EXP Lane/Roam
+Beatrix|Marksman|Gold Lane
+Phoveus|Fighter|EXP Lane
+Natan|Marksman|Gold Lane
+Aulus|Fighter|Jungle/EXP Lane
+Aamon|Assassin|Jungle
+Valentina|Mage|Mid Lane
+Edith|Tank/Marksman|EXP Lane/Roam
+Yin|Fighter|EXP Lane/Jungle
+Melissa|Marksman|Gold Lane
+Xavier|Mage|Mid Lane
+Julian|Fighter/Mage|Jungle/EXP Lane/Mid Lane
+Fredrinn|Tank/Fighter|Jungle/EXP Lane
+Joy|Assassin|Jungle/EXP Lane
+Novaria|Mage|Mid Lane
+Ixia|Marksman|Gold Lane
+Nolan|Assassin|Jungle
+Cici|Fighter|EXP Lane
+Chip|Tank/Support|Roam
+Zhuxin|Mage|Mid Lane
+Suyou|Fighter/Assassin|EXP Lane/Jungle
+Lukas|Fighter|EXP Lane
+Obsidia|Marksman|Gold Lane
+Hirara|Assassin|Jungle`;
+const HEROES=RAW.trim().split("\n").map(l=>{const [name,r,ln]=l.split("|");return{name,roles:r.split("/"),lanes:ln.split("/")}});
+const EXAMPLE=["Tannu","adlu","Alex","mas leopart","salain (jawir)","Samuel NRYT","tole (ahmad)"];
 
-let last = "";
+function rand(max){const lim=Math.floor(0x100000000/max)*max,b=new Uint32Array(1);do{crypto.getRandomValues(b)}while(b[0]>=lim);return b[0]%max}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
 
-function render(teams){
-  const out = document.getElementById("out");
-  out.innerHTML = "";
-  let delay = 0, text = [];
-  teams.forEach(t => {
-    const wrap = document.createElement("div"); wrap.className = "team";
-    if (t.title) { const h = document.createElement("h2"); h.textContent = t.title; wrap.appendChild(h); text.push(t.title); }
-    t.rows.forEach(r => {
-      const d = document.createElement("div"); d.className = "row";
-      d.style.setProperty("--c", r.role.c); d.style.animationDelay = (delay++ * 160) + "ms";
-      const n = document.createElement("span"); n.className = "n"; n.textContent = r.name;
-      const ro = document.createElement("span"); ro.className = "r"; ro.textContent = r.role.n;
-      d.append(n, ro); wrap.appendChild(d);
-      text.push(r.name + " - " + r.role.n);
-    });
-    out.appendChild(wrap);
-    text.push("");
+const $=id=>document.getElementById(id);
+let names=[],teams=[],mode="hero",cfg={mode:"hero",withHero:false,kind:"role"};
+try{names=JSON.parse(localStorage.getItem("mlg_names")||"[]")}catch(e){}
+if(!Array.isArray(names)||!names.length)names=EXAMPLE.slice();
+let hist=[];try{hist=JSON.parse(localStorage.getItem("mlg_hist")||"[]")}catch(e){}
+function save(){try{localStorage.setItem("mlg_names",JSON.stringify(names))}catch(e){}}
+function say(t){$("msg").textContent=t;if(t)setTimeout(()=>{if($("msg").textContent===t)$("msg").textContent=""},3500)}
+
+/* ---------- pemain ---------- */
+function drawChips(){
+  const box=$("chips");box.querySelectorAll(".chip").forEach(c=>c.remove());
+  names.forEach((n,i)=>{
+    const c=document.createElement("span");c.className="chip";
+    const t=document.createElement("span");t.textContent=n;
+    const x=document.createElement("button");x.type="button";x.textContent="×";x.setAttribute("aria-label","Hapus "+n);
+    x.onclick=()=>{names.splice(i,1);save();drawChips()};
+    c.append(t,x);box.insertBefore(c,$("in"));
   });
-  last = text.join("\n").trim();
-  const act = document.createElement("div"); act.className = "actions";
-  const again = document.createElement("button"); again.textContent = "Acak ulang"; again.onclick = run;
-  const copy = document.createElement("button"); copy.textContent = "Salin hasil";
-  copy.onclick = async () => {
-    try { await navigator.clipboard.writeText(last); copy.textContent = "Tersalin"; }
-    catch { copy.textContent = "Gagal menyalin"; }
-    setTimeout(() => copy.textContent = "Salin hasil", 1500);
-  };
-  act.append(again, copy); out.appendChild(act);
+  $("count").textContent=names.length+" pemain";
+}
+function addNames(raw){
+  raw.split(/[\n,]/).map(s=>s.trim()).filter(Boolean).forEach(n=>{
+    if(names.some(m=>m.toLowerCase()===n.toLowerCase()))say("Nama \""+n+"\" sudah ada, dilewati.");
+    else names.push(n);
+  });
+  save();drawChips();
+}
+$("in").addEventListener("keydown",e=>{
+  if(e.key==="Enter"||e.key===","){e.preventDefault();addNames(e.target.value);e.target.value=""}
+  else if(e.key==="Backspace"&&!e.target.value&&names.length){names.pop();save();drawChips()}
+});
+$("in").addEventListener("blur",e=>{if(e.target.value.trim()){addNames(e.target.value);e.target.value=""}});
+$("in").addEventListener("paste",e=>{const t=(e.clipboardData||window.clipboardData).getData("text");if(/[\n,]/.test(t)){e.preventDefault();addNames(t)}});
+$("chips").addEventListener("click",()=>$("in").focus());
+$("clear").onclick=()=>{names=[];save();drawChips();$("in").focus()};
+$("example").onclick=()=>{names=EXAMPLE.slice();save();drawChips()};
+
+/* ---------- opsi ---------- */
+function syncOpts(){
+  const isLane=mode==="lane";
+  if(isLane)$("split").checked=true;
+  $("split").disabled=isLane;
+  $("balance").disabled=!$("split").checked;
+  $("rowLH").hidden=!isLane;
+  $("rowPri").hidden=!(mode==="pick"||(isLane&&$("laneHero").checked));
+}
+document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener("change",()=>{mode=r.value;syncOpts()}));
+["split","laneHero"].forEach(id=>$(id).addEventListener("change",syncOpts));
+syncOpts();
+
+/* ---------- pengacakan ---------- */
+function heroesFor(kind,key){
+  const prim=$("primary").checked;
+  return HEROES.filter(h=>{const a=kind==="role"?h.roles:h.lanes;return prim?a[0]===key:a.includes(key)});
+}
+function orderFor(n,isLane,bal){
+  let base;
+  if(isLane)base=bal?[...CORE_LANE,...shuffle(FLEX_LANE)]:shuffle(LANES.map(l=>l.n));
+  else if(bal&&n<=5)base=[...CORE_ROLE,...shuffle(FLEX_ROLE),...LAST_ROLE];
+  else{base=[];while(base.length<n)base.push(...shuffle(ROLES.map(r=>r.n)))}
+  return base.slice(0,n).map(k=>ALL[k]);
+}
+function generate(){
+  const isLane=mode==="lane",split=isLane||$("split").checked,bal=$("balance").checked&&split;
+  const withHero=mode==="pick"||(isLane&&$("laneHero").checked);
+  cfg={mode,withHero,kind:isLane?"lane":"role"};
+  const players=shuffle(names);
+  let groups=[players],titled=false;
+  if(split){
+    const tc=Math.ceil(players.length/5),size=Math.ceil(players.length/tc);
+    groups=[];for(let t=0;t<tc;t++)groups.push(players.slice(t*size,(t+1)*size));
+    titled=tc>1;
+  }
+  const used=new Set();
+  return groups.map((g,gi)=>{
+    const order=orderFor(g.length,isLane,bal);
+    const rows=g.map((name,i)=>{
+      const row={name,role:order[i]};
+      if(withHero){
+        const c=heroesFor(cfg.kind,row.role.n).filter(h=>!used.has(h.name));
+        row.hero=c.length?c[rand(c.length)]:null;if(row.hero)used.add(row.hero.name);
+      }
+      return row;
+    });
+    return{title:titled?"Tim "+String.fromCharCode(65+gi):"",rows};
+  });
 }
 
-function run(){
-  const err = document.getElementById("err"); err.textContent = "";
-  const names = getNames();
-  if (names.length < 2) { err.textContent = "Isi minimal 2 nama."; return; }
-  const dup = names.find((n, i) => names.findIndex(m => m.toLowerCase() === n.toLowerCase()) !== i);
-  if (dup) { err.textContent = "Ada nama dobel: " + dup + ". Bedakan dulu supaya hasilnya tidak ambigu."; return; }
-
-  const mode = document.querySelector('input[name="mode"]:checked').value;
-  const players = shuffle(names);
-
-  if (mode === "hero") {
-    // Kartu role dikocok per putaran: tiap putaran semua role keluar sekali sebelum ada yang dobel
-    let deck = [];
-    const rows = players.map(name => {
-      if (!deck.length) deck = shuffle(HEROES);
-      return { name, role: deck.pop() };
+/* ---------- tampilan hasil ---------- */
+function label(r){return cfg.withHero?(r.hero?r.hero.name:"(hero habis)"):r.role.n}
+function sub(r){return r.hero?r.role.n+" · role hero: "+r.hero.roles.join("/")+" · jalur: "+r.hero.lanes.join("/"):""}
+function textOut(){
+  return teams.map(t=>(t.title?t.title+"\n":"")+t.rows.map(r=>r.name+" - "+r.role.n+(r.hero?" ("+r.hero.name+")":"")).join("\n")).join("\n\n");
+}
+function spinRow(el,row,delay){
+  const rEl=el.querySelector(".r");
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){rEl.textContent=label(row);return Promise.resolve()}
+  const pool=cfg.withHero?HEROES.map(h=>h.name):(cfg.mode==="lane"?LANES:ROLES).map(x=>x.n);
+  el.classList.add("spin");
+  return new Promise(res=>setTimeout(()=>{
+    const iv=setInterval(()=>{rEl.textContent=pool[rand(pool.length)]},70);
+    setTimeout(()=>{clearInterval(iv);rEl.textContent=label(row);el.classList.remove("spin");el.classList.add("done");res()},650);
+  },delay));
+}
+function render(animate){
+  const out=$("out");out.innerHTML="";
+  const jobs=[];let k=0;
+  teams.forEach((t,ti)=>{
+    const wrap=document.createElement("div");wrap.className="team";
+    if(t.title){const h=document.createElement("h2");h.textContent=t.title;wrap.append(h)}
+    t.rows.forEach((r,ri)=>{
+      const el=document.createElement("div");el.className="res";el.style.setProperty("--c",r.role.c);
+      const who=document.createElement("div");who.className="who";
+      const n=document.createElement("div");n.className="n";n.textContent=r.name;
+      const ro=document.createElement("div");ro.className="r";ro.textContent=label(r);who.append(n,ro);
+      if(r.hero){const h=document.createElement("div");h.className="h";h.textContent=sub(r);who.append(h)}
+      const b=document.createElement("button");b.type="button";
+      const act=cfg.withHero?"Ganti hero":"Tukar";
+      b.textContent=act;b.setAttribute("aria-label",act+" untuk "+r.name);
+      b.onclick=()=>reroll(ti,ri);
+      el.append(who,b);wrap.append(el);
+      if(animate==="all"||(animate&&animate.has(ti+"-"+ri)))jobs.push(spinRow(el,r,animate==="all"?k++*300:0));
     });
-    render([{ rows }]);
-  } else {
-    const teamCount = Math.ceil(players.length / 5);
-    const size = Math.ceil(players.length / teamCount);
-    const teams = [];
-    for (let t = 0; t < teamCount; t++) {
-      const group = players.slice(t * size, (t + 1) * size);
-      const lanes = shuffle(LANES);
-      teams.push({ title: "Tim " + String.fromCharCode(65 + t), rows: group.map((name, i) => ({ name, role: lanes[i] })) });
-    }
-    render(teams);
+    out.append(wrap);
+  });
+  const bar=document.createElement("div");bar.className="actions";
+  const again=document.createElement("button");again.textContent="Acak ulang semua";again.onclick=run;
+  const copy=document.createElement("button");copy.textContent="Salin hasil";
+  copy.onclick=async()=>{try{await navigator.clipboard.writeText(textOut());copy.textContent="Tersalin"}catch(e){copy.textContent="Gagal menyalin"}setTimeout(()=>copy.textContent="Salin hasil",1500)};
+  bar.append(again,copy);out.append(bar);
+  return Promise.all(jobs);
+}
+function reroll(ti,ri){
+  const t=teams[ti],r=t.rows[ri];
+  if(cfg.withHero){
+    const used=new Set(teams.flatMap(x=>x.rows.map(y=>y.hero&&y.hero.name)));
+    const c=heroesFor(cfg.kind,r.role.n).filter(h=>!used.has(h.name));
+    if(!c.length){say("Tidak ada hero lain untuk "+r.role.n+".");return}
+    r.hero=c[rand(c.length)];render(new Set([ti+"-"+ri]));
+  }else{
+    if(t.rows.length<2){say("Tim ini cuma 1 orang, tidak ada yang bisa ditukar.");return}
+    let j;do{j=rand(t.rows.length)}while(j===ri);
+    const o=t.rows[j];[r.role,o.role]=[o.role,r.role];
+    render(new Set([ti+"-"+ri,ti+"-"+j]));
   }
 }
-document.getElementById("go").addEventListener("click", run);
+function pushHist(){
+  hist.unshift({t:new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}),text:textOut()});
+  hist=hist.slice(0,5);try{localStorage.setItem("mlg_hist",JSON.stringify(hist))}catch(e){}
+  drawHist();
+}
+function drawHist(){
+  const b=$("histBody");b.innerHTML="";
+  if(!hist.length){b.textContent="Belum ada hasil.";return}
+  hist.forEach(h=>{const p=document.createElement("pre");p.textContent="["+h.t+"]\n"+h.text;b.append(p)});
+}
+async function run(){
+  if(names.length<2){say("Isi minimal 2 pemain dulu.");$("in").focus();return}
+  $("go").disabled=true;
+  teams=generate();
+  await render("all");
+  pushHist();
+  $("go").disabled=false;
+  $("out").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("go").onclick=run;
+drawChips();drawHist();
 </script>
 </body>
 </html>
