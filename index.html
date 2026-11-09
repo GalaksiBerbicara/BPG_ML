@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gacha Role Mobile Legends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&display=swap">
+<style>
+:root{
+  --ink:#0d1230; --panel:#161d47; --line:#2b3571; --gold:#e8b65b; --cyan:#58d6ee;
+  --text:#eef0fa; --mute:#9aa3d0; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 50% -10%,#212b6b,var(--ink));color:var(--text);
+  font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+main{max-width:860px;margin:0 auto;padding:32px 18px 64px}
+h1{font:700 clamp(30px,6vw,52px)/1.05 "Chakra Petch",system-ui,sans-serif;margin:0 0 6px;letter-spacing:.5px}
+.sub{color:var(--mute);margin:0 0 28px;max-width:56ch}
+.setup{display:grid;gap:18px;grid-template-columns:1fr 1fr}
+@media(max-width:680px){.setup{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+label,.lbl{display:block;font-weight:600;margin-bottom:8px}
+textarea{width:100%;min-height:190px;resize:vertical;background:#0f1538;color:var(--text);
+  border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
+textarea:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.hint{color:var(--mute);font-size:14px;margin:8px 0 0}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--gold);background:#1e2757}
+.opt b{display:block}.opt span{color:var(--mute);font-size:14px}
+.opt input{margin-top:5px;accent-color:var(--gold)}
+.go{margin-top:6px;width:100%;padding:14px;border:0;border-radius:8px;cursor:pointer;
+  font:700 20px "Chakra Petch",system-ui,sans-serif;color:#2a1d00;background:linear-gradient(180deg,#f4cd7e,var(--gold))}
+.go:active{transform:translateY(1px)}
+.err{color:#ff9aa8;min-height:1.4em;margin:10px 0 0;font-size:14px}
+#out{margin-top:30px}
+.team{margin-bottom:22px}
+.team h2{font:700 22px "Chakra Petch",system-ui,sans-serif;margin:0 0 10px;color:var(--cyan)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);
+  border:1px solid var(--line);border-left:4px solid var(--c,var(--gold));border-radius:8px;
+  padding:12px 16px;margin-bottom:8px;animation:pop .35s ease-out both}
+.row .n{font-weight:600;word-break:break-word}
+.row .r{font:700 18px "Chakra Petch",system-ui,sans-serif;color:var(--c,var(--gold));text-align:right}
+@keyframes pop{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.row{animation:none}}
+.actions{display:flex;gap:10px;margin-top:6px}
+.actions button{padding:10px 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font:inherit}
+.actions button:hover{border-color:var(--gold)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Gacha Role Mobile Legends</h1>
+  <p class="sub">Tulis nama pemain, pilih mode, lalu acak. Hasil dikocok dengan sistem kartu, jadi tidak ada role yang dobel selama masih ada sisa.</p>
+
+  <div class="setup">
+    <div class="box">
+      <label for="names">Daftar pemain (satu nama per baris)</label>
+      <textarea id="names" spellcheck="false">Tannu
+adlu
+Alex
+mas leopart
+salain (jawir)
+Samuel NRYT
+tole (ahmad)</textarea>
+      <p class="hint" id="count"></p>
+    </div>
+
+    <div class="box">
+      <span class="lbl">Mode</span>
+      <label class="opt"><input type="radio" name="mode" value="hero" checked>
+        <div><b>Role hero</b><span>Tank, Fighter, Assassin, Mage, Marksman, Support. Semua orang dapat satu role.</span></div></label>
+      <label class="opt"><input type="radio" name="mode" value="lane">
+        <div><b>Lane + bagi tim</b><span>Pemain dibagi ke tim berisi maksimal 5 orang, tiap orang dapat lane unik di timnya.</span></div></label>
+      <button class="go" id="go" type="button">Acak sekarang</button>
+      <p class="err" id="err" role="alert"></p>
+    </div>
+  </div>
+
+  <section id="out" aria-live="polite"></section>
+</main>
+
+<script>
+const HEROES = [
+  {n:"Tank",c:"#58d6ee"},{n:"Fighter",c:"#f08a4b"},{n:"Assassin",c:"#ff6b81"},
+  {n:"Mage",c:"#b794ff"},{n:"Marksman",c:"#e8b65b"},{n:"Support",c:"#6fe3a0"}
+];
+const LANES = [
+  {n:"EXP Lane",c:"#f08a4b"},{n:"Jungle",c:"#6fe3a0"},{n:"Mid Lane",c:"#b794ff"},
+  {n:"Gold Lane",c:"#e8b65b"},{n:"Roam",c:"#58d6ee"}
+];
+
+// Fisher-Yates dengan crypto supaya tidak bias
+function rand(max){
+  const lim = Math.floor(0x100000000 / max) * max, b = new Uint32Array(1);
+  do { crypto.getRandomValues(b); } while (b[0] >= lim);
+  return b[0] % max;
+}
+function shuffle(a){
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function getNames(){
+  return document.getElementById("names").value.split("\n").map(s => s.trim()).filter(Boolean);
+}
+function updateCount(){
+  document.getElementById("count").textContent = getNames().length + " pemain";
+}
+document.getElementById("names").addEventListener("input", updateCount);
+updateCount();
+
+let last = "";
+
+function render(teams){
+  const out = document.getElementById("out");
+  out.innerHTML = "";
+  let delay = 0, text = [];
+  teams.forEach(t => {
+    const wrap = document.createElement("div"); wrap.className = "team";
+    if (t.title) { const h = document.createElement("h2"); h.textContent = t.title; wrap.appendChild(h); text.push(t.title); }
+    t.rows.forEach(r => {
+      const d = document.createElement("div"); d.className = "row";
+      d.style.setProperty("--c", r.role.c); d.style.animationDelay = (delay++ * 160) + "ms";
+      const n = document.createElement("span"); n.className = "n"; n.textContent = r.name;
+      const ro = document.createElement("span"); ro.className = "r"; ro.textContent = r.role.n;
+      d.append(n, ro); wrap.appendChild(d);
+      text.push(r.name + " - " + r.role.n);
+    });
+    out.appendChild(wrap);
+    text.push("");
+  });
+  last = text.join("\n").trim();
+  const act = document.createElement("div"); act.className = "actions";
+  const again = document.createElement("button"); again.textContent = "Acak ulang"; again.onclick = run;
+  const copy = document.createElement("button"); copy.textContent = "Salin hasil";
+  copy.onclick = async () => {
+    try { await navigator.clipboard.writeText(last); copy.textContent = "Tersalin"; }
+    catch { copy.textContent = "Gagal menyalin"; }
+    setTimeout(() => copy.textContent = "Salin hasil", 1500);
+  };
+  act.append(again, copy); out.appendChild(act);
+}
+
+function run(){
+  const err = document.getElementById("err"); err.textContent = "";
+  const names = getNames();
+  if (names.length < 2) { err.textContent = "Isi minimal 2 nama."; return; }
+  const dup = names.find((n, i) => names.findIndex(m => m.toLowerCase() === n.toLowerCase()) !== i);
+  if (dup) { err.textContent = "Ada nama dobel: " + dup + ". Bedakan dulu supaya hasilnya tidak ambigu."; return; }
+
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const players = shuffle(names);
+
+  if (mode === "hero") {
+    // Kartu role dikocok per putaran: tiap putaran semua role keluar sekali sebelum ada yang dobel
+    let deck = [];
+    const rows = players.map(name => {
+      if (!deck.length) deck = shuffle(HEROES);
+      return { name, role: deck.pop() };
+    });
+    render([{ rows }]);
+  } else {
+    const teamCount = Math.ceil(players.length / 5);
+    const size = Math.ceil(players.length / teamCount);
+    const teams = [];
+    for (let t = 0; t < teamCount; t++) {
+      const group = players.slice(t * size, (t + 1) * size);
+      const lanes = shuffle(LANES);
+      teams.push({ title: "Tim " + String.fromCharCode(65 + t), rows: group.map((name, i) => ({ name, role: lanes[i] })) });
+    }
+    render(teams);
+  }
+}
+document.getElementById("go").addEventListener("click", run);
+</script>
+</body>
+</html>
